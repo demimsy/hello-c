@@ -1,0 +1,67 @@
+name: Build and Publish
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Make scripts executable
+    - name: Prepare scripts
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: chmod +x ./_*.sh
+
+    # Configure step
+    - name: Configure
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./_0_config.sh
+      
+    # Build step
+    - name: Build
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./_1_build.sh
+      
+    # Test step
+    - name: Test
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./_2_test.sh
+      
+    # Check step (includes coverage)
+    - name: Check
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./_3_check.sh
+      
+    # Publish step
+    - name: Publish
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: ./_4_publish.sh
+
+    # Upload artifacts
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: publish/
+        if-no-files-found: error
+
+    # Upload coverage report separately for easy access
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: publish/coverage/report/
+        if-no-files-found: warn
