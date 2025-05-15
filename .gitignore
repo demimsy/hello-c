@@ -4,6 +4,9 @@ build/
 /Release/
 /build*/
 
+# Publish directory
+publish/
+
 # Prerequisites
 *.d
 

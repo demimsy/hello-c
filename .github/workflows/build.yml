@@ -11,43 +11,61 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+    
     steps:
     - uses: actions/checkout@v4
+
+    # Log into GitHub Container Registry
+    - name: Log into registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     # Make scripts executable
     - name: Prepare scripts
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: chmod +x ./_*.sh
 
     # Configure step
     - name: Configure
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: ./_0_config.sh
       
     # Build step
     - name: Build
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: ./_1_build.sh
       
     # Test step
     - name: Test
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: ./_2_test.sh
       
     # Check step (includes coverage)
     - name: Check
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: ./_3_check.sh
       
     # Publish step
     - name: Publish
       uses: devcontainers/ci@v0.3
       with:
+        imageName: ghcr.io/${{ github.repository }}/hello-c-devcontainer
         runCmd: ./_4_publish.sh
 
     # Upload artifacts
